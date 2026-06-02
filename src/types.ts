@@ -113,7 +113,8 @@ export interface ScheduleEvent {
   dayOfWeek: number; // 1: Lundi, 2: Mardi, 3: Mercredi, 4: Jeudi, 5: Vendredi
   startTime: string; // e.g. "08:15"
   endTime: string; // e.g. "10:00"
-  color: string;
+  color?: string;
+  notes?: string;
 }
 
 export interface SchoolNotification {

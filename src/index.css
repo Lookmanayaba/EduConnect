@@ -8,20 +8,59 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   
   /* Brand visual palette */
-  --color-[#00A896]: #00A896;
+  --color-[#00A896]: #0d9488; /* Premium, softer, highly cohesive teal accent instead of harsh green */
+  
+  /* Modern soft-slate gray overrides to replace cold default zincs */
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #f1f5f9;
+  --color-zinc-200: #e2e8f0;
+  --color-zinc-300: #cbd5e1;
+  --color-zinc-400: #94a3b8;
+  --color-zinc-500: #64748b;
+  --color-zinc-600: #475569;
+  --color-zinc-700: #334155;
+  --color-zinc-800: #1e293b;
+  --color-zinc-900: #0f172a;
+  --color-zinc-950: #020617;
+
+  /* Premium soft border radiuses for less cluttered, softer aesthetics */
+  --radius-2xl: 1.25rem; /* Larger, softer border radius */
+  --radius-xl: 0.875rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+
+  /* Premium soft shadows to eliminate visual clutter and provide depth */
+  --shadow-3xs: 0 1px 2px rgba(15, 23, 42, 0.02);
+  --shadow-2xs: 0 2px 4px rgba(15, 23, 42, 0.03);
+  --shadow-xs: 0 4px 12px -2px rgba(15, 23, 42, 0.03), 0 2px 4px -1px rgba(15, 23, 42, 0.02);
+  --shadow-sm: 0 8px 24px -4px rgba(15, 23, 42, 0.04), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 12px 32px -6px rgba(15, 23, 42, 0.06), 0 6px 12px -3px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 16px 40px -8px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #fafafa;
-  color: #1c1917;
+  background-color: #f8fafc;
+  color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.625; /* Uniform premium line-height as standard */
+  letter-spacing: -0.011em;
 }
 
 html.dark body {
-  background-color: #09090b;
-  color: #f4f4f5;
+  background-color: #020617;
+  color: #f1f5f9;
+}
+
+/* Global premium weight stability & readable tracking */
+p, span, div, li, td, th {
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, .text-lg, .text-xl, .text-2xl, .text-3xl {
+  line-height: 1.35;
+  letter-spacing: -0.022em;
 }
 
 /* Elegant fade-in animations for responsive dashboards */
@@ -49,9 +88,31 @@ html.dark body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e4e4e7;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4d4d8;
+  background: #94a3b8;
 }
+
+/* Gold fade animation for newly validated grades */
+@keyframes goldHighlightFade {
+  0% {
+    background-color: rgba(245, 158, 11, 0.4);
+    border-color: rgba(245, 158, 11, 0.8);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+  }
+  20% {
+    background-color: rgba(245, 158, 11, 0.3);
+    border-color: rgba(245, 158, 11, 0.6);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.animate-grade-highlight {
+  animation: goldHighlightFade 5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+

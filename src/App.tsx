@@ -34,6 +34,7 @@ import DashboardStudent from './components/DashboardStudent';
 import DashboardTeacher from './components/DashboardTeacher';
 import DashboardAdmin from './components/DashboardAdmin';
 import UserProfileModal from './components/UserProfileModal';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   GraduationCap, 
   LogOut, 
@@ -405,6 +406,18 @@ export default function App() {
       if (g.id === gradeId) {
         const studentObj = students.find(s => s.id === g.studentId);
         const nameText = studentObj ? studentObj.name : 'votre enfant';
+        
+        // Persist validated grade ID to localStorage to enable gold visual highlight in student view
+        try {
+          const newlyValidated = JSON.parse(localStorage.getItem('educonnect_newly_validated_grades') || '[]');
+          if (!newlyValidated.includes(gradeId)) {
+            newlyValidated.push(gradeId);
+            localStorage.setItem('educonnect_newly_validated_grades', JSON.stringify(newlyValidated));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+
         handleAddNotification(
           'Nouvelle Note Validée 🎉',
           `La note du devoir "${g.title}" en ${g.subject} (${g.value}/20) a été officiellement approuvée par l'administration pour ${nameText}.`,
@@ -585,65 +598,73 @@ export default function App() {
                 )}
               </button>
 
-              {showNotificationDropdown && (
-                <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden z-50">
-                  <div className="p-3 bg-zinc-55 dark:bg-zinc-950 border-b border-zinc-150 dark:border-zinc-850 flex justify-between items-center">
-                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-200">Centre d'Alertes</span>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={() => handleMarkAllAsRead(currentUser.role)}
-                        className="text-[10px] text-teal-600 dark:text-teal-400 hover:underline font-bold cursor-pointer font-sans"
-                        id="mark-all-read-btn"
-                      >
-                        Tout marquer lu
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="max-h-64 overflow-y-auto divide-y divide-zinc-105 dark:divide-zinc-850">
-                    {visibleNotifications.length === 0 ? (
-                      <div className="py-8 px-4 text-center text-zinc-400 dark:text-zinc-500 text-xs">
-                        Aucune notification active
-                      </div>
-                    ) : (
-                      visibleNotifications.map(notif => (
-                        <div 
-                          key={notif.id} 
-                          className={`p-3 text-xs transition relative group ${
-                            notif.isRead 
-                              ? 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400' 
-                              : 'bg-teal-50/50 dark:bg-teal-955/20 text-zinc-905 dark:text-zinc-200 font-medium'
-                          }`}
+              <AnimatePresence>
+                {showNotificationDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-3 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden z-50 text-left"
+                  >
+                    <div className="p-3 bg-zinc-55 dark:bg-zinc-950 border-b border-zinc-150 dark:border-zinc-850 flex justify-between items-center">
+                      <span className="text-xs font-bold text-zinc-900 dark:text-zinc-200">Centre d'Alertes</span>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={() => handleMarkAllAsRead(currentUser.role)}
+                          className="text-[10px] text-teal-600 dark:text-teal-400 hover:underline font-bold cursor-pointer font-sans"
+                          id="mark-all-read-btn"
                         >
-                          <div className="flex justify-between items-start gap-1">
-                            <span className="font-bold pr-5">{notif.title}</span>
-                            <div className="flex gap-1 shrink-0 opacity-80 group-hover:opacity-100">
-                              {!notif.isRead && (
-                                <button 
-                                  onClick={() => handleMarkAsRead(notif.id)}
-                                  className="text-[10px] text-teal-600 dark:text-teal-450 hover:text-teal-700 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 rounded p-0.5 cursor-pointer"
-                                  title="Lu"
-                                >
-                                  <Check className="w-3 h-3" />
-                                </button>
-                              )}
-                              <button 
-                                onClick={() => handleDeleteNotification(notif.id)}
-                                className="text-[10px] text-red-500 hover:text-red-700 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 rounded p-0.5 cursor-pointer"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                          <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 leading-normal">{notif.content}</p>
-                          <span className="block mt-1 text-[9px] text-zinc-400 dark:text-zinc-550 font-mono">{notif.date}</span>
+                          Tout marquer lu
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-64 overflow-y-auto divide-y divide-zinc-105 dark:divide-zinc-850">
+                      {visibleNotifications.length === 0 ? (
+                        <div className="py-8 px-4 text-center text-zinc-400 dark:text-zinc-500 text-xs">
+                          Aucune notification active
                         </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
+                      ) : (
+                        visibleNotifications.map(notif => (
+                          <div 
+                            key={notif.id} 
+                            className={`p-3 text-xs transition relative group ${
+                              notif.isRead 
+                                ? 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400' 
+                                : 'bg-teal-50/50 dark:bg-teal-955/20 text-zinc-905 dark:text-zinc-200 font-medium'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start gap-1">
+                              <span className="font-bold pr-5">{notif.title}</span>
+                              <div className="flex gap-1 shrink-0 opacity-80 group-hover:opacity-100">
+                                {!notif.isRead && (
+                                  <button 
+                                    onClick={() => handleMarkAsRead(notif.id)}
+                                    className="text-[10px] text-teal-600 dark:text-teal-450 hover:text-teal-700 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 rounded p-0.5 cursor-pointer"
+                                    title="Lu"
+                                  >
+                                    <Check className="w-3 h-3" />
+                                  </button>
+                                )}
+                                <button 
+                                  onClick={() => handleDeleteNotification(notif.id)}
+                                  className="text-[10px] text-red-500 hover:text-red-700 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-705 rounded p-0.5 cursor-pointer"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 leading-normal">{notif.content}</p>
+                            <span className="block mt-1 text-[9px] text-zinc-400 dark:text-zinc-550 font-mono">{notif.date}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <span className="text-zinc-450 dark:text-zinc-550 hidden sm:inline shrink-0">|</span>
@@ -747,6 +768,7 @@ export default function App() {
             absences={absences}
             homeworks={homeworks}
             messages={messages}
+            schedules={schedules}
             onAddGrade={handleAddGrade}
             onAddAbsence={handleAddAbsence}
             onPublishHomework={handlePublishHomework}
