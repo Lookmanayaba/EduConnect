@@ -1,0 +1,6 @@
+{
+  "name": "EduConnect",
+  "description": "Plateforme numérique éducative de suivi scolaire en temps réel pour parents, élèves, enseignants et administration, avec analyses pédagogiques par IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
